@@ -24,8 +24,8 @@ The project is built one lesson at a time; see [`docs/lessons/`](docs/lessons/).
 | 1. Toolchain | WSL + LLVM cross toolchain, QEMU, GDB, .NET SDK | ✅ |
 | 2. Boot | `_start` in assembly, park secondary cores, EL2 → EL1, stack, `.bss`, UART "Hello" in C | ✅ |
 | 3. C# entry | NativeAOT object linked into the kernel image, called from C | ✅ |
-| 4. Runtime | Minimal CoreLib, object layout, allocator, strings and arrays | 🚧 |
-| 5. Kernel | Exception vectors, interrupts, timer, MMU and paging, threads and scheduler | ⏳ |
+| 4. Runtime | Minimal CoreLib, object layout, allocator, strings and arrays | ✅ |
+| 5. Kernel | Exception vectors, interrupts, timer, MMU and paging, threads and scheduler | 🚧 |
 | 6. Userspace | EL0, system calls, processes, the app framework, the shell | ⏳ |
 | 7. Init | Service manager: start, supervise and log services | ⏳ |
 

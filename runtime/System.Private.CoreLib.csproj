@@ -1,7 +1,12 @@
 <!--
   RHOS's own base library. It's named System.Private.CoreLib because that is
   the name the C# compiler and ILC expect for "the assembly that defines
-  Object, String, Int32...". All settings come from Directory.Build.props.
+  Object, String, Int32...". Shared settings come from Directory.Build.props.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- CS0169/CS0649: fields like Int32.m_value are filled in by the
+         runtime, never by C# code. CS8500: pointers to object references. -->
+    <NoWarn>$(NoWarn);CS0169;CS0649;CS8500</NoWarn>
+  </PropertyGroup>
 </Project>
