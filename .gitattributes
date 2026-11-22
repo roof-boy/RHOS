@@ -1,0 +1,5 @@
+# Keep LF line endings even if files are touched from Windows.
+# Shell scripts and Makefiles break with CRLF.
+* text=auto eol=lf
+*.img binary
+*.bin binary

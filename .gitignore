@@ -1,0 +1,23 @@
+# Build output
+build/
+*.o
+*.elf
+*.img
+*.map
+
+# Your scratch space for lesson exercises
+playground/
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
