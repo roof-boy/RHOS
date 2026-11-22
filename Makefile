@@ -108,7 +108,7 @@ $(DOTNET_OUT)/Kernel/Release/Kernel.dll: $(CS_SRC) kernel/Kernel.csproj runtime/
 # tools/find-ilc.sh prints ILC's path, downloading it the first time.
 $(BUILD)/kernel/kernel.o: $(DOTNET_OUT)/Kernel/Release/Kernel.dll
 	@mkdir -p $(dir $@)
-	$$(./tools/find-ilc.sh) $< $(DOTNET_OUT)/Kernel/Release/System.Private.CoreLib.dll \
+	$$(bash tools/find-ilc.sh) $< $(DOTNET_OUT)/Kernel/Release/System.Private.CoreLib.dll \
 		$(ILCFLAGS) --map:$(BUILD)/kernel/kernel.map.xml -o $@
 
 $(BUILD)/kernel8.img: $(BUILD)/kernel8.elf
@@ -116,7 +116,7 @@ $(BUILD)/kernel8.img: $(BUILD)/kernel8.elf
 	@echo "Built $@ ($$(stat -c %s $@) bytes)"
 
 check:
-	@./tools/check-toolchain.sh
+	@bash tools/check-toolchain.sh
 
 run: $(BUILD)/kernel8.img
 	$(QEMU) $(QEMU_FLAGS)
