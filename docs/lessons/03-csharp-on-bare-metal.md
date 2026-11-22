@@ -210,6 +210,13 @@ The errors come in two kinds:
 - **`CS0246: The type or namespace name 'X' could not be found`**: your code
   uses `X` (like `DllImport`) and nobody has defined it.
 
+> **Make everything `public`.** In C#, a type with no access modifier is
+> `internal`, and a member with none is `private`. The compiler only accepts a
+> *public* `System.Object` as the real one; an internal one gives the same
+> "not defined" error as no `Object` at all. So every type in your CoreLib, and
+> every constructor, property and field the compiler uses, must be `public`.
+> (The only exceptions in this lesson are marked `internal` explicitly.)
+
 > **Tip:** errors are printed twice (once per project); only read the first few
 > each time. And when you fix a batch, the *next* batch can be completely
 > different, because the compiler only gets further once the first problems
