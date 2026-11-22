@@ -11,6 +11,7 @@ namespace System
     public struct IntPtr { };
     public struct Char { };
     public struct Double { };
+    public struct UInt16 { };
     public struct UInt32 { };
     public struct UInt64 { };
     public struct UIntPtr { };
