@@ -35,9 +35,12 @@ GDB      := gdb-multiarch
 # -mgeneral-regs-only: no FP/SIMD registers until the kernel enables them
 # -mcpu=cortex-a53   : the Pi 3's CPU
 ARCHFLAGS := --target=$(TARGET) -mcpu=cortex-a53
+# -MMD -MP          : also write build/**/*.d files listing the headers each
+#                     source includes, so editing a header rebuilds its users
+DEPFLAGS  := -MMD -MP
 CFLAGS    := $(ARCHFLAGS) -ffreestanding -nostdlib -mgeneral-regs-only \
-             -O2 -g -Wall -Wextra -std=c11 -Iboot/include
-ASFLAGS   := $(ARCHFLAGS) -g -Iboot/include
+             -O2 -g -Wall -Wextra -std=c11 -Iboot/include $(DEPFLAGS)
+ASFLAGS   := $(ARCHFLAGS) -g -Iboot/include $(DEPFLAGS)
 LDFLAGS   := -nostdlib -T boot/linker.ld -Map=$(BUILD)/kernel8.map
 
 # ---- QEMU --------------------------------------------------------------------
@@ -76,6 +79,8 @@ $(BUILD)/boot/%.c.o: boot/%.c
 $(BUILD)/kernel8.elf: $(OBJS) boot/linker.ld
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 endif
+
+-include $(OBJS:.o=.d)
 
 $(BUILD)/kernel8.img: $(BUILD)/kernel8.elf
 	$(OBJCOPY) -O binary $< $@

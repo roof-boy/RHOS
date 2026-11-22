@@ -7,7 +7,7 @@ Solutions to quiz questions are hidden in collapsible blocks. Try first.
 | # | Lesson | You end with |
 |---|--------|--------------|
 | 1 | [Toolchain and QEMU](01-toolchain-and-qemu.md) | A working cross toolchain, and a 3-instruction program stepped in GDB |
-| 2 | Booting to "Hello" over UART | `make run` prints from your own C and assembly |
+| 2 | [Booting to "Hello" over UART](02-boot-to-uart.md) | `make run` prints from your own C and assembly |
 | 3 | C# with NativeAOT, called from C | A C# method runs on bare metal |
 | 4 | A minimal C# runtime | `new`, strings and arrays work |
 | 5 | The kernel | Interrupts, timer, MMU, a scheduler |
