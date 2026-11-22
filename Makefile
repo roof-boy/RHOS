@@ -67,8 +67,11 @@ ILCFLAGS   := --targetos:linux --targetarch:arm64 -O --noscan --nativelib \
 BOOT_S   := $(wildcard boot/*.S)
 BOOT_C   := $(wildcard boot/*.c)
 BOOT_OBJ := $(patsubst boot/%,$(BUILD)/boot/%.o,$(BOOT_S) $(BOOT_C))
+# Assembly helpers that belong to the C# runtime (from Lesson 4)
+RT_S     := $(wildcard runtime/native/*.S)
+RT_OBJ   := $(patsubst runtime/native/%,$(BUILD)/runtime/%.o,$(RT_S))
 CS_SRC   := $(shell find runtime kernel -name '*.cs' 2>/dev/null)
-OBJS     := $(BOOT_OBJ)
+OBJS     := $(BOOT_OBJ) $(RT_OBJ)
 # The C# kernel joins the build as soon as kernel/ contains a .cs file.
 ifneq ($(wildcard kernel/*.cs),)
 OBJS     += $(BUILD)/kernel/kernel.o
@@ -87,6 +90,10 @@ $(BUILD)/kernel8.elf:
 	@exit 1
 else
 $(BUILD)/boot/%.S.o: boot/%.S
+	@mkdir -p $(dir $@)
+	$(CC) $(ASFLAGS) -c $< -o $@
+
+$(BUILD)/runtime/%.S.o: runtime/native/%.S
 	@mkdir -p $(dir $@)
 	$(CC) $(ASFLAGS) -c $< -o $@
 
