@@ -44,18 +44,12 @@ public static unsafe class Kernel
     }
 
     [UnmanagedCallersOnly(EntryPoint = "kernel_main")]
-    public static int Main()
+    public static int Main(void* heapStart, ulong heapSize)
     {
-        Print("Hello from C#!\n");
-        double total = 0;
-        for (int i = 0; i < 10; i++)
-            total += i * 0.5;
-        if (total > 20)
-            Print("Float OK\n");
-
-        PrintDec(10);
-
-        PrintHex(0xDEADBEEF);
+        PrintHex((ulong)Internal.Runtime.Allocator.Alloc(5));
+        Print("\n");
+        PrintHex((ulong)Internal.Runtime.Allocator.Alloc(16)); Print("\n");
+        Print("\n");
 
         return 42;
     }

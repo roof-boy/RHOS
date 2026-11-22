@@ -22,4 +22,7 @@ SECTIONS
     .bss : { *(.bss, .bss.*) *(COMMON) }
     . = ALIGN(16);
     __bss_end = .;
+
+    . = ALIGN(4096);
+    __heap_start = .;
 }
