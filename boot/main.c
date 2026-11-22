@@ -1,5 +1,9 @@
 #include "uart.h"
 
+int kernel_main(void);
+
+unsigned long __security_cookie = 0x2B992DDFA232UL;
+
 void boot_main(void)
 {
     uart_init();
@@ -10,7 +14,9 @@ void boot_main(void)
     uart_puts("\n");
 
     uart_puts("Hello from RHOS!\n");
-    uart_puthex(255);
+
+    uint32_t result = kernel_main();
+    uart_puthex(result);
     while (1)
     {
         char c = uart_getc();

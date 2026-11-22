@@ -7,9 +7,16 @@ SECTIONS
     .text : {
         KEEP(*(.text.boot))
         *(.text .text.*)
+        *(__managedcode)
     }
-    .rodata : { *(.rodata .rodata.*) }
-    .data   : { *(.data .data.*) }
+    .rodata : {
+        *(.rodata .rodata.*)
+        *(.dotnet_eh_table)
+    }
+    .data   : {
+        *(.data .data.*)
+        *(__modules) 
+    }
     . = ALIGN(16);
     __bss_start = .;
     .bss : { *(.bss, .bss.*) *(COMMON) }

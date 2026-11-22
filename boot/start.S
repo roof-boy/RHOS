@@ -19,6 +19,8 @@ _start:
     msr     cntvoff_el2, xzr
     ldr     x1, =0x30D00800
     msr     sctlr_el1, x1
+    ldr     x1, =0x33FF
+    msr     cptr_el2, x1
 
     mov     x1, #0x3C5
     msr     spsr_el2, x1
@@ -27,6 +29,10 @@ _start:
     eret
 
 in_el1:
+    mov     x1, #(3 << 20)
+    msr     cpacr_el1, x1
+    isb
+
     // Setup execution stack
     mov     x1, #0x80000
     mov     sp, x1
