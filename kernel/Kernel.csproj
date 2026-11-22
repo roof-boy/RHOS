@@ -1,0 +1,9 @@
+<!--
+  The RHOS kernel, in C#. Compiled against our own CoreLib (runtime/), then
+  turned into native AArch64 code by ILC (see the Makefile).
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../runtime/System.Private.CoreLib.csproj" />
+  </ItemGroup>
+</Project>

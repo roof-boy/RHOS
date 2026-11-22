@@ -1,0 +1,18 @@
+<!--
+  NoStdLib stops the compiler adding mscorlib, but the .NET SDK still adds
+  references to the whole framework (System.Runtime.dll and friends). This
+  target removes them right before compiling, keeping only references to our
+  own projects (the kernel's reference to runtime/).
+-->
+<Project>
+  <Target Name="RemoveFrameworkReferences"
+          BeforeTargets="BeforeCompile"
+          AfterTargets="FindReferenceAssembliesForReferences">
+    <ItemGroup>
+      <ReferencePathWithRefAssemblies Remove="@(ReferencePathWithRefAssemblies)"
+          Condition="'%(ReferencePathWithRefAssemblies.ReferenceSourceTarget)' != 'ProjectReference'" />
+      <ReferencePath Remove="@(ReferencePath)"
+          Condition="'%(ReferencePath.ReferenceSourceTarget)' != 'ProjectReference'" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,10 +1,10 @@
 # RHOS top-level Makefile
 #
 # Pipeline:   boot/*.S, boot/*.c  --(clang)-->  build/boot/*.o
+#             runtime/, kernel/   --(dotnet build)-->  IL .dll files
+#             IL .dll files       --(ILC, NativeAOT)-->  build/kernel/kernel.o
 #             build/**/*.o        --(ld.lld + boot/linker.ld)-->  build/kernel8.elf
 #             build/kernel8.elf   --(llvm-objcopy)-->  build/kernel8.img
-#
-# The C# kernel object (kernel/) gets added to this pipeline in Lesson 3.
 #
 # Common targets:
 #   make check     verify your toolchain (Lesson 1)
@@ -50,11 +50,29 @@ LDFLAGS   := -nostdlib -T boot/linker.ld -Map=$(BUILD)/kernel8.map
 QEMU_FLAGS := -M raspi3b -kernel $(BUILD)/kernel8.img -display none \
               -serial mon:stdio
 
+# ---- C# (NativeAOT) ----------------------------------------------------------
+# `dotnet build` compiles C# to IL (.dll files). ILC, the NativeAOT compiler,
+# then turns the IL into an AArch64 object file that links like any C object.
+DOTNET     := dotnet
+DOTNET_OUT := $(BUILD)/dotnet/bin
+# --systemmodule: our runtime/ project *is* the base library (System.Private.CoreLib)
+# --nativelib   : produce a library (no Main/exe startup), we call in from C
+# -O --noscan   : optimise each method, without whole-program analysis that
+#                 expects a full .NET runtime to exist
+# --reflectiondata:none : no reflection metadata (we have no reflection)
+ILCFLAGS   := --targetos:linux --targetarch:arm64 -O --noscan --nativelib \
+              --systemmodule:System.Private.CoreLib --reflectiondata:none
+
 # ---- Sources -----------------------------------------------------------------
 BOOT_S   := $(wildcard boot/*.S)
 BOOT_C   := $(wildcard boot/*.c)
 BOOT_OBJ := $(patsubst boot/%,$(BUILD)/boot/%.o,$(BOOT_S) $(BOOT_C))
+CS_SRC   := $(shell find runtime kernel -name '*.cs' 2>/dev/null)
 OBJS     := $(BOOT_OBJ)
+# The C# kernel joins the build as soon as kernel/ contains a .cs file.
+ifneq ($(wildcard kernel/*.cs),)
+OBJS     += $(BUILD)/kernel/kernel.o
+endif
 
 # ---- Rules -------------------------------------------------------------------
 .PHONY: all check run debug gdb disasm clean
@@ -81,6 +99,17 @@ $(BUILD)/kernel8.elf: $(OBJS) boot/linker.ld
 endif
 
 -include $(OBJS:.o=.d)
+
+# C# -> IL
+$(DOTNET_OUT)/Kernel/Release/Kernel.dll: $(CS_SRC) kernel/Kernel.csproj runtime/System.Private.CoreLib.csproj
+	$(DOTNET) build kernel/Kernel.csproj -c Release -nologo -v quiet -clp:NoSummary
+
+# IL -> AArch64 object file
+# tools/find-ilc.sh prints ILC's path, downloading it the first time.
+$(BUILD)/kernel/kernel.o: $(DOTNET_OUT)/Kernel/Release/Kernel.dll
+	@mkdir -p $(dir $@)
+	$$(./tools/find-ilc.sh) $< $(DOTNET_OUT)/Kernel/Release/System.Private.CoreLib.dll \
+		$(ILCFLAGS) --map:$(BUILD)/kernel/kernel.map.xml -o $@
 
 $(BUILD)/kernel8.img: $(BUILD)/kernel8.elf
 	$(OBJCOPY) -O binary $< $@

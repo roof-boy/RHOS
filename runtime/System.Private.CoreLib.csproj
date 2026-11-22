@@ -1,0 +1,7 @@
+<!--
+  RHOS's own base library. It's named System.Private.CoreLib because that is
+  the name the C# compiler and ILC expect for "the assembly that defines
+  Object, String, Int32...". All settings come from Directory.Build.props.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+</Project>

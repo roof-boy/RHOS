@@ -539,8 +539,17 @@ mmio_write(GPFSEL1, sel);
 ```
 
 There's also a small ritual to switch off the pins' built-in "pull" resistors
-(which hold an unconnected pin at a default level and would interfere). You
-write `GPPUD`, wait a moment, write `GPPUDCLK0`, wait, write `GPPUDCLK0` again.
+(which hold an unconnected pin at a default level and would interfere). It's
+three writes with short waits in between. "Write X to register R" always means
+`mmio_write(R, X)`:
+
+1. `mmio_write(GPPUD, 0);`: choose the setting "no pull resistor".
+2. Wait about 150 cycles (`delay(150)`).
+3. `mmio_write(GPPUDCLK0, (1u << 14) | (1u << 15));`: apply that setting to
+   pins 14 and 15 only (one bit per pin).
+4. Wait again.
+5. `mmio_write(GPPUDCLK0, 0);`: finish the operation.
+
 That's straight from the chip's manual; there's no deeper meaning to learn here.
 
 ### The full recipe

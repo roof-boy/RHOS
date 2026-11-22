@@ -1,0 +1,35 @@
+<!--
+  Settings shared by every C# project in RHOS (runtime/ and kernel/).
+  MSBuild picks this file up automatically for any .csproj below this folder.
+
+  The big idea: a normal .NET project compiles against Microsoft's base library
+  (System.Private.CoreLib: Object, String, Int32...). RHOS can't use that
+  library, because it needs a full .NET runtime and an OS underneath. So we
+  turn it off and compile against our own CoreLib from runtime/ instead.
+-->
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Optimize>true</Optimize>
+
+    <!-- Don't reference Microsoft's base library (mscorlib / System.Private.CoreLib). -->
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <!-- Without a standard library, the compiler needs to be told the metadata version. -->
+    <RuntimeMetadataVersion>v4.0.30319</RuntimeMetadataVersion>
+
+    <!-- These generate code that uses attributes our CoreLib doesn't define. -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+
+    <!-- Keep all .NET build output under build/dotnet/, next to the C build output. -->
+    <BaseOutputPath>$(MSBuildThisFileDirectory)build/dotnet/bin/$(MSBuildProjectName)/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)build/dotnet/obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+</Project>
