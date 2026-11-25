@@ -25,7 +25,9 @@ public static unsafe class Exceptions
     [UnmanagedCallersOnly(EntryPoint = "exception_handler")]
     static void Handle(int kind, TrapFrame* frame)
     {
-        if (kind == 4)
+        if (kind == 5) // irq slot kind
+            Interrupts.Handle();
+        else if (kind == 4)
             HandleSync(frame);
         else
             Crash("unexpected exception kind " + kind, frame);

@@ -30,3 +30,37 @@ cpu_syscall:
     mov     x0, x1
     svc     #0
     ret
+
+// Interrupts on/off. DAIF are four "ignore" bits: D(ebug) A(bort) I(RQ) F(IQ).
+// daifclr clears bits (stop ignoring), daifset sets them. #2 = the I bit.
+.global cpu_irq_enable
+cpu_irq_enable:
+    msr     daifclr, #2
+    ret
+
+.global cpu_irq_disable
+cpu_irq_disable:
+    msr     daifset, #2
+    ret
+
+// void cpu_wait(void): sleep until an interrupt arrives.
+.global cpu_wait
+cpu_wait:
+    wfi
+    ret
+
+// ---- ARM Generic Timer ----
+
+// ulong timer_frequency(void): how many counts per second
+.global timer_frequency
+timer_frequency:
+    mrs     x0, cntfrq_el0
+    ret
+
+// void timer_start(ulong ticks): raise an interrupt `ticks` counts from now
+.global timer_start
+timer_start:
+    msr     cntp_tval_el0, x0
+    mov     x0, #1
+    msr     cntp_ctl_el0, x0
+    ret
